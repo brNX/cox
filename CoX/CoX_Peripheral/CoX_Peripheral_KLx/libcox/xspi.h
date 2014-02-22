@@ -2,7 +2,7 @@
 //
 //! \file xspi.h
 //! \brief Prototypes for the SPI Driver.
-//! \version V2.2.1.0
+//! \version V2.1.1.1
 //! \date 11/14/2011
 //! \author CooCox
 //! \copy
@@ -1131,5 +1131,9 @@ extern void SPIDataWrite(unsigned long ulBase,
                          unsigned long ulLen);
 extern void SPIIntCallbackInit(unsigned long ulBase, 
                                xtEventCallback pfnCallback);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

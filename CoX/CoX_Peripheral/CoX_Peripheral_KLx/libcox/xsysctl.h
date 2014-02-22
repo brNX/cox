@@ -760,6 +760,7 @@ extern unsigned long xSysCtlPeripheraIntNumGet(unsigned long ulPeripheralBase);
         SysCtlPeripheralDisable(ulPeripheralID)
 
 extern void xSysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig);
+extern void xSysCtlClockSet32KhzFLLExt();
 
 //*****************************************************************************
 //
@@ -1860,7 +1861,8 @@ extern unsigned long SysCtlBusClkGet(void);
 extern unsigned long SysCtlHClockGet(void);
 extern void SysCtlHClockSet(unsigned long ulSysClk, unsigned long ulConfig);
 extern void SysCtlClkOututSrcSet(unsigned long ulClkOutSrc);
-extern unsigned long SysCtlPWMAndUART0ClkGet(void);
+extern unsigned long SysCtlPWMClkGet(void);
+extern unsigned long SysCtlUART0ClkGet(void);
 
 //*****************************************************************************
 //

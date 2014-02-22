@@ -265,6 +265,58 @@ PWMDutySet(unsigned long ulBase, unsigned long ulChannel,
     xHWREG(ulBase + TPM_C0V + ulChannel * 8) = ulCMRData;
 }
 
+
+//*****************************************************************************
+//
+//! \brief Set the PWM duty of the PWM module.
+//!
+//! \param ulBase is the base address of the PWM port.
+//! \param ulChannel is the PWM channel.
+//! \param ulDuty is the duty of PWM channel.
+//!
+//! This function is to set the PWM duty of the PWM module.
+//!
+//! The \e ulChannel parameter can be values:
+//! \b PWM_CHANNEL0, \b PWM_CHANNEL1, \b PWM_CHANNEL2, \b PWM_CHANNEL3,
+//! \b PWM_CHANNEL4 .
+//!
+//! The \e ulDuty parameter can be values:  duty > 0 && duty <= 10000.
+//!
+//! \note Duty should not be 0;
+//!
+//! \return None.
+//
+//*****************************************************************************
+void
+PWMDutySetPrec(unsigned long ulBase, unsigned long ulChannel,
+                                 unsigned int ulDuty)
+{
+    unsigned long ulCMRData;
+
+    //
+    // Check the arguments.
+    //
+    xASSERT((ulBase == PWMA_BASE) || (ulBase == PWMB_BASE) ||
+            (ulBase == PWMC_BASE));
+    if(ulBase == PWMA_BASE)
+    {
+        xASSERT((ulChannel >= 0) && (ulChannel <= 5));
+    }
+    else
+    {
+        xASSERT((ulChannel >= 0) && (ulChannel <= 1));
+    }
+    xASSERT(((ulDuty > 0) || (ulDuty <= 10000)));
+
+    ulCMRData = (PWMMODGet(ulBase) *  ulDuty) / 10000;
+    if ((PWMMODGet(ulBase) *  ulDuty) / 10000 == 0)
+    {
+        ulCMRData = 0;
+    }
+
+    xHWREG(ulBase + TPM_C0V + ulChannel * 8) = ulCMRData;
+}
+
 //*****************************************************************************
 //
 //! \brief Get the PWM duty of the PWM module. 
@@ -614,7 +666,7 @@ PWMFrequencySet(unsigned long ulBase, unsigned long ulFrequency)
     //
     // Get TPM clock source
     //
-    ulTPMSrc = SysCtlPWMAndUART0ClkGet();
+    ulTPMSrc = SysCtlPWMClkGet();
     
     xASSERT((ulFrequency > 0) && (ulFrequency <= ulTPMSrc));
 
@@ -716,7 +768,7 @@ PWMFrequencyConfig(unsigned long ulBase, unsigned long ulConfig)
     //
     xHWREG(ulBase + TPM_MOD) = usMODValue;
     
-    return(SysCtlPWMAndUART0ClkGet() / usMODValue / ulPreScale); 
+    return(SysCtlPWMClkGet() / usMODValue / ulPreScale);
 }
 
 //*****************************************************************************

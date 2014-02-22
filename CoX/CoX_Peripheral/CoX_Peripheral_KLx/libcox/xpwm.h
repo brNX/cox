@@ -540,6 +540,10 @@ extern void xPWMInitConfigure(unsigned long ulBase, unsigned long ulChannel,
 #define xPWMDutySet(ulBase, ulChannel, ulDuty)                                \
         PWMDutySet(ulBase, ulChannel, ulDuty)
 
+#define xPWMDutySetPrec(ulBase, ulChannel, ulDuty)                            \
+        PWMDutySetPrec(ulBase, ulChannel, ulDuty)
+
+
 //*****************************************************************************
 //
 //! \brief Get the PWM duty of the PWM module. 
@@ -996,6 +1000,8 @@ extern void PWMMODSet(unsigned long ulBase, unsigned long ulMODValue);
 extern unsigned long PWMMODGet(unsigned long ulBase);
 extern void PWMDutySet(unsigned long ulBase, unsigned long ulChannel,
                        unsigned char ulDuty);
+extern void PWMDutySetPrec(unsigned long ulBase, unsigned long ulChannel,
+                       unsigned int ulDuty);
 extern unsigned long PWMDutyGet(unsigned long ulBase, unsigned long ulChannel);
 
 extern void PWMIntEnable(unsigned long ulBase, unsigned long ulChannel,

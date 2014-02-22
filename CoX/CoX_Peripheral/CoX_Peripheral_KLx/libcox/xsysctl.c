@@ -46,10 +46,11 @@
 #include "xdebug.h"
 #include "xsysctl.h"
 #include "xcore.h"
+#include "xhw_tpm.h"
 
 
 
-static unsigned long s_ulExtClockMHz = 8;
+static unsigned long s_ulExtClockHz = 8000000;
 
 //*****************************************************************************
 //
@@ -139,7 +140,7 @@ static const tPeripheralTable g_pPeripherals[] =
 //
 //*****************************************************************************
 #if defined(gcc) || defined(__GNUC__)
-void __attribute__((naked))
+void __attribute__((used,naked))
 SysCtlDelay(unsigned long ulCount)
 {
     __asm("    sub     r0, #1\n"
@@ -257,9 +258,9 @@ xSysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
     //
     // Calc oscillator freq
     //
-    s_ulExtClockMHz = ((ulConfig & SYSCTL_XTAL_MASK) >> 8);
+    s_ulExtClockHz = ((ulConfig & SYSCTL_XTAL_MASK) >> 8) * 1000000;
     ulSysDiv = 0;
-    ulOscFreq = s_ulExtClockMHz*1000000;
+    ulOscFreq = s_ulExtClockHz;
 
     switch(ulConfig & SYSCTL_OSCSRC_M)
     {
@@ -454,6 +455,43 @@ xSysCtlClockSet(unsigned long ulSysClk, unsigned long ulConfig)
         }       
     }
 }
+
+ //47972352 Hz from FLL
+void xSysCtlClockSet32KhzFLLExt() {
+
+	unsigned char ucTempReg = 0;
+
+	s_ulExtClockHz=32768;
+
+	/* SIM->CLKDIV1: OUTDIV1=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,OUTDIV4=1,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0,??=0 */
+	xHWREG(SIM_CLKDIV1) &= ~SIM_CLKDIV1_OUTDIV1_M;
+	xHWREG(SIM_CLKDIV1) &= ~SIM_CLKDIV1_OUTDIV4_M;
+	xHWREG(SIM_CLKDIV1) |= SIM_CLKDIV1_OUTDIV4_2;
+
+	/* MCG->C2: LOCRE0=0,??=0,RANGE0=0,HGO0=0,EREFS0=1,LP=0,IRCS=0 */
+	ucTempReg = xHWREGB(MCG_C2);
+	ucTempReg &= ~(MCG_C2_RANGE0_M | MCG_C2_HGO0 | MCG_C2_EREFS0);
+	ucTempReg |= (MCG_C2_RANGE0_LOW | MCG_C2_HGO0 | MCG_C2_EREFS0); //check HGO
+	xHWREGB(MCG_C2) = ucTempReg;
+
+	/* OSC0->CR: ERCLKEN=1,??=0,EREFSTEN=0,??=0,SC2P=0,SC4P=0,SC8P=0,SC16P=0 */
+	xHWREGB(OSC0_CR) =	OSC0_CR_ERCLKEN;
+
+	/* MCG->C1: CLKS=0,FRDIV=0,IREFS=0,IRCLKEN=1,IREFSTEN=0 */
+	xHWREGB(MCG_C1) = MCG_C1_IRCLKEN;
+
+	/* MCG->C4: DMX32=1,DRST_DRS=1 */
+	xHWREGB(MCG_C4) |= MCG_C4_DMX32	| MCG_C4_DRST_DRS_MID;
+
+	while ((xHWREGB(MCG_S) & MCG_S_IREFST) != 0x00U) { /* Check that the source of the FLL reference clock is the external reference clock. */
+	}
+
+	while ((xHWREGB(MCG_S) & 0x0CU) != 0x00U) { /* Wait until output of the FLL is selected */
+
+	}
+
+}
+
         
 //*****************************************************************************
 //
@@ -619,11 +657,10 @@ xSysCtlPeripheralClockSourceSet(unsigned long ulPeripheralSrc,
             (ulPeripheralSrc==xSYSCTL_PWMC_HCLK)||
             (ulPeripheralSrc==xSYSCTL_PWMC_INT));
     xASSERT((ulDivide <= 256) && (ulDivide >= 1));
-
     //
     // Set the peripheral clock source
     //
-    ulDivide = 0;
+    //ulDivide = 0;
     if(ulPeripheralSrc == SYSCTL_PERIPH_RTC_S_OSC32KCLK)
     {
         xHWREG(SIM_SOPT1) &= ~SIM_SOPT1_OSC32KSEL_M;
@@ -636,6 +673,7 @@ xSysCtlPeripheralClockSourceSet(unsigned long ulPeripheralSrc,
     }
     else if(ulPeripheralSrc == xSYSCTL_ADC0_MAIN)
     {
+    	ulDivide = 0; //TODO : for now
         xHWREG(ADC_BASE + ADC0_CFG1) &= ~ADC0_CFG1_ADICLK_M;
         xHWREG(ADC_BASE + ADC0_CFG1) &= ~ADC0_CFG1_ADIV_M;
         xHWREG(ADC_BASE + ADC0_CFG1) |= ulDivide;
@@ -667,11 +705,16 @@ xSysCtlPeripheralClockSourceSet(unsigned long ulPeripheralSrc,
         xHWREG(SIM_SOPT2) &= ~SIM_SOPT2_UART0SRC_M;
         xHWREG(SIM_SOPT2) |= SIM_SOPT2_UART0SRC_MCGIRCLK;
     }
-    else if(ulPeripheralSrc == SYSCTL_PERIPH_TPM_S_MCGFLLCLK)
+    else if(ulPeripheralSrc == SYSCTL_PERIPH_TPM_S_MCGFLLCLK) //pwm hclk
     {
         xHWREG(SIM_SOPT2) &= ~SIM_SOPT2_PLLFLLSEL;    	
         xHWREG(SIM_SOPT2) &= ~SIM_SOPT2_TPMSRC_M;
         xHWREG(SIM_SOPT2) |= SIM_SOPT2_TPMSRC_MCGXLL;
+
+        //divide
+        //divider
+        /*unsigned long divider =  xHWREG(TPM0_BASE+TPM_SC) & TPM_SC_PS_M;
+        divider = 1<<divider;*/
     }
     else if(ulPeripheralSrc == SYSCTL_PERIPH_TPM_S_MCGPLLCLK_2)
     {
@@ -1095,6 +1138,7 @@ SysCtlPeripheralClockSourceSet(unsigned long ulPeripheralSrc)
     if(ulPeripheralSrc == SYSCTL_PERIPH_RTC_S_OSC32KCLK)
     {
         xHWREG(SIM_SOPT1) &= ~SIM_SOPT1_OSC32KSEL_M;
+        xHWREG(SIM_SOPT1) |= SIM_SOPT1_OSC32KSEL_OSC32KCLK;
     }
     else if(ulPeripheralSrc == SYSCTL_PERIPH_RTC_S_RTC_CLKIN)
     {
@@ -1759,7 +1803,7 @@ SysCtlHClockGet(void)
     //
     if((xHWREG(MCG_C1)&SYSCTL_HLCK_S_MAIN) == SYSCTL_HLCK_S_MAIN)
     {
-        ulFreqout = s_ulExtClockMHz*1000000;
+        ulFreqout = s_ulExtClockHz;
         ulDivider = (xHWREG(SIM_CLKDIV1) & SIM_CLKDIV1_OUTDIV1_M) >> SIM_CLKDIV1_OUTDIV1_S;
         ulFreqout = ulFreqout/(ulDivider+1);  
     }
@@ -1788,7 +1832,7 @@ SysCtlHClockGet(void)
         //
         if((xHWREGB(MCG_C6) & MCG_C6_PLLS) == MCG_C6_PLLS)
         {
-            ulFreqout = s_ulExtClockMHz* ((xHWREGB(MCG_C6)&MCG_C6_VDIV0_M)+24)*1000000;
+            ulFreqout = s_ulExtClockHz* ((xHWREGB(MCG_C6)&MCG_C6_VDIV0_M)+24);
             ulDivider = (xHWREG(SIM_CLKDIV1) & SIM_CLKDIV1_OUTDIV1_M) >> SIM_CLKDIV1_OUTDIV1_S;
             ulDividerPll = (xHWREGB(MCG_C5)&MCG_C5_PRDIV0_M);
             ulFreqout = ulFreqout/((ulDivider+1)*(ulDividerPll+1));
@@ -1810,15 +1854,17 @@ SysCtlHClockGet(void)
             //
             // The external reference clock is FLL Source
             //
+            else if (((xHWREGB(MCG_C4) & MCG_C4_DRST_DRS_M) == MCG_C4_DRST_DRS_MID) && ((xHWREGB(MCG_C4)& MCG_C4_DMX32) ==  MCG_C4_DMX32)) {
+            	ulFreqout = 47972352u;
+			}
             else
             {
-                ulFreqout = s_ulExtClockMHz * 1000000;
+                ulFreqout = s_ulExtClockHz;
                 ulDivider = (xHWREG(SIM_CLKDIV1) & SIM_CLKDIV1_OUTDIV1_M) >> SIM_CLKDIV1_OUTDIV1_S;
                 ulFreqout = ulFreqout/(ulDivider+1);            
             }
         }
     }
-
     return ulFreqout;
 }
 
@@ -1857,7 +1903,7 @@ SysCtlHClockSet(unsigned long ulSysClk, unsigned long ulConfig)
     //
     // Calc oscillator freq
     //
-    s_ulExtClockMHz = ((ulConfig & SYSCTL_XTAL_MASK) >> 8);
+    s_ulExtClockHz = ((ulConfig & SYSCTL_XTAL_MASK) >> 8)*1000000;
 
     //
     // HLCK clock source is SYSCTL_OSC_FLL_INT
@@ -1953,7 +1999,7 @@ SysCtlHClockSet(unsigned long ulSysClk, unsigned long ulConfig)
             }
         }
         xHWREGB(MCG_C6) |= MCG_C6_CME0;
-        ulOscFreq = s_ulExtClockMHz * 1000000;
+        ulOscFreq = s_ulExtClockHz;
         if(ulSysClk <= ulOscFreq)
         {
             //
@@ -2070,7 +2116,7 @@ SysCtlHClockSet(unsigned long ulSysClk, unsigned long ulConfig)
         while(!(xHWREG(MCG_S)&MCG_S_CLKST_EXT));
         xHWREG(MCG_C5) &= ~MCG_C5_PRDIV0_M;
             
-        ulOscFreq = s_ulExtClockMHz*1000000;
+        ulOscFreq = s_ulExtClockHz;
         if (ulSysClk <= ulOscFreq)
         {
             //
@@ -2442,66 +2488,95 @@ SysCtlRegulatorStatusGet(void)
     }
 }
 
+
+//TODO: add tpm 1
 //*****************************************************************************
 //
-//! \brief The function is used to Get PWM and UART0 Clock Rate. 
+//! \brief The function is used to Get PWM Clock Rate.
 //!
 //! \param None.
 //!
-//! The function is used to Get PWM and UART0 Clock Rate.
+//! The function is used to Get PWM Clock Rate.
 //!
-//! \return the PWM and UART0 Clock Rate clock.
+//! \return the PWM Clock Rate clock.
 //
 //*****************************************************************************
-unsigned long SysCtlPWMAndUART0ClkGet(unsigned long ulGetUart)
+unsigned long SysCtlPWMClkGet(void)
 {
     unsigned long ulHclk = 0, ulPWMClk = 0;
-    unsigned char shift;
 
     //
-    // Uart register in SOPT2 is shifted, otherwise get TPM
-    if (ulGetUart)
+    // Check the PWM Clock Source.
+    //
+    if((xHWREG(SIM_SOPT2) & SIM_SOPT2_TPMSRC_MCGXLL)
+                         == SIM_SOPT2_TPMSRC_MCGXLL)
     {
-    	shift = 2;
-    }
-    else
-    {
-    	shift = 0;
-    }
+        ulHclk = SysCtlHClockGet();
 
-    //
-    // Check the PWM/Uart Clock Source.
-    //
-    if((xHWREG(SIM_SOPT2) & (SIM_SOPT2_TPMSRC_MCGXLL << shift))
-                         == (SIM_SOPT2_TPMSRC_MCGXLL << shift))
-    {
-        if (xHWREG(SIM_SOPT2) & SIM_SOPT2_PLLFLLSEL)
-		{
-        	//MCGPLLCLK/2
-        	ulHclk = SysCtlHClockGet();
-        	ulPWMClk = ulHclk/2;
-		}
-        else
-        {
-        	//FLL (slow or fast)
-        	ulPWMClk = 96000000;
-        }
+        /*divider
+        unsigned long divider =  xHWREG(TPM0_BASE+TPM_SC) & TPM_SC_PS_M;
+        divider = 1<<divider;
+        */
+        ulPWMClk = ulHclk;
         return ulPWMClk;
     }
-    else if((xHWREG(SIM_SOPT2) & (SIM_SOPT2_TPMSRC_OSCERCLK << shift))
-                         == (SIM_SOPT2_TPMSRC_OSCERCLK << shift))
+    else if((xHWREG(SIM_SOPT2) & SIM_SOPT2_TPMSRC_OSCERCLK)
+                         == SIM_SOPT2_TPMSRC_OSCERCLK)
     {
         xHWREGB(OSC0_CR) |= OSC0_CR_ERCLKEN;
         xHWREGB(MCG_C2) |= MCG_C2_EREFS0;
-        ulPWMClk = s_ulExtClockMHz*1000000;
-        return ulPWMClk;    
+        ulPWMClk = s_ulExtClockHz;
+        return ulPWMClk;
     }
     else
     {
         xHWREGB(MCG_C1) |= MCG_C1_IRCLKEN;
         xHWREGB(MCG_C2) |= MCG_C2_IRCS;
-        // fast clock 4MHz
         ulPWMClk = 4000000;
-        return ulPWMClk;    
+        return ulPWMClk;
+    }
+}
+
+//*****************************************************************************
+//
+//! \brief The function is used to Get UART0 Clock Rate.
+//!
+//! \param None.
+//!
+//! The function is used to Get UART0 Clock Rate.
+//!
+//! \return the UART0 Clock Rate clock.
+//
+//*****************************************************************************
+unsigned long SysCtlUART0ClkGet(void)
+{
+    unsigned long ulHclk = 0, ulUARTClk = 0;
+
+    //
+    // Check the PWM Clock Source.
+    //
+    if((xHWREG(SIM_SOPT2) & SIM_SOPT2_UART0SRC_MCGXLL)
+                         == SIM_SOPT2_UART0SRC_MCGXLL)
+    {
+        ulHclk = SysCtlHClockGet();
+
+        //TODO: check divider?
+        ulUARTClk = ulHclk;
+        return ulUARTClk;
+    }
+    else if((xHWREG(SIM_SOPT2) & SIM_SOPT2_UART0SRC_OSCERCLK)
+                         == SIM_SOPT2_UART0SRC_OSCERCLK)
+    {
+        xHWREGB(OSC0_CR) |= OSC0_CR_ERCLKEN;
+        xHWREGB(MCG_C2) |= MCG_C2_EREFS0;
+        ulUARTClk = s_ulExtClockHz;
+        return ulUARTClk;    
+    }
+    else
+    {
+        xHWREGB(MCG_C1) |= MCG_C1_IRCLKEN;
+        xHWREGB(MCG_C2) |= MCG_C2_IRCS;
+        ulUARTClk = 4000000;
+        return ulUARTClk;    
     }
 }

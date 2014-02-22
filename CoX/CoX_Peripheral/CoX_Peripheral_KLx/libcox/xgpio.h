@@ -2966,211 +2966,449 @@ extern unsigned long xGPIODirModeGet(unsigned long ulPort,
 //
 //! GPIO pin A0
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PA0_ADC12        	0x00000000
+#define GPIO_PA0_CMP0IN2		0x00000000
+#define GPIO_PA0_PA0            0x00000001
+#define GPIO_PA0_TIM0CH1        0x00000002
+#define GPIO_PA0_SWDCLK         0x00000003
+#else
 #define GPIO_PA0_TSI0CH1        0x00000000
 #define GPIO_PA0_PA0            0x00000001
 #define GPIO_PA0_TIM0CH5        0x00000003
 #define GPIO_PA0_SWDCLK         0x00000007
+#endif
+
 
 //
 //! GPIO pin A1
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PA1_PA1            0x00000011
+#define GPIO_PA1_TIM0CLKIN		0x00000012
+#define GPIO_PA1_RESETB        	0x00000013
+#else
 #define GPIO_PA1_TSI0CH2        0x00000010
 #define GPIO_PA1_PA1            0x00000011
 #define GPIO_PA1_UART0RX        0x00000012
 #define GPIO_PA1_TIM2CH0        0x00000013
+#endif
 
 //
 //! GPIO pin A2
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PA2_PA2            0x00000021
+#define GPIO_PA2_CMP0O        	0x00000022
+#define GPIO_PA2_SWDDIO        	0x00000023
+#else
 #define GPIO_PA2_TSI0CH2        0x00000020
 #define GPIO_PA2_PA2            0x00000021
 #define GPIO_PA2_UART0TX        0x00000022
 #define GPIO_PA2_TIM2CH1        0x00000023
+#endif
 
 //
 //! GPIO pin A3
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA3_TSI0CH4        0x00000030
 #define GPIO_PA3_PA3            0x00000031
 #define GPIO_PA3_I2C1SCK        0x00000032
 #define GPIO_PA3_TIM0CH0        0x00000033
 #define GPIO_PA3_SWDDIO         0x00000037
+#else
+#endif
 
 //
 //! GPIO pin A4
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA4_TSI0CH5        0x00000040
 #define GPIO_PA4_I2C1SDA        0x00000042
 #define GPIO_PA4_TIM0CH1        0x00000043
 #define GPIO_PA4_NMIB           0x00000047
-
+#else
+#endif
 //
 //! GPIO pin A5
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PA5_PA5            0x00000051
+#define GPIO_PA5_TIM0CH5        0x00000052
+#define GPIO_PA5_SPI0CS         0x00000053
+#else
 #define GPIO_PA5_PA5            0x00000051
 #define GPIO_PA5_USBCLK         0x00000052
 #define GPIO_PA5_TIM0CH2        0x00000053
+#endif
+
+//! GPIO pin A6
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PA5_PA5            0x00000051
+#define GPIO_PA5_TIM0CH5        0x00000052
+#define GPIO_PA5_SPI0CS         0x00000053
+#else
+#endif
+
+//! GPIO pin A7
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PA5_PA5            0x00000051
+#define GPIO_PA5_TIM0CH5        0x00000052
+#define GPIO_PA5_SPI0CS         0x00000053
+#else
+#endif
+
+//! GPIO pin A8
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PA5_PA5            0x00000051
+#define GPIO_PA5_TIM0CH5        0x00000052
+#define GPIO_PA5_SPI0CS         0x00000053
+#else
+#endif
+
+//! GPIO pin A9
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PA5_PA5            0x00000051
+#define GPIO_PA5_TIM0CH5        0x00000052
+#define GPIO_PA5_SPI0CS         0x00000053
+#else
+#endif
+
+//! GPIO pin A10
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PA5_PA5            0x00000051
+#define GPIO_PA5_TIM0CH5        0x00000052
+#define GPIO_PA5_SPI0CS         0x00000053
+#else
+#endif
+
+//! GPIO pin A11
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PA5_PA5            0x00000051
+#define GPIO_PA5_TIM0CH5        0x00000052
+#define GPIO_PA5_SPI0CS         0x00000053
+#else
+#endif
 
 //
 //! GPIO pin A12
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA12_PA12          0x000000C1
 #define GPIO_PA12_TIM1CH0       0x000000C3
-
+#else
+#endif
 //
 //! GPIO pin A13
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA13_PA13          0x000000D1
 #define GPIO_PA13_TIM1CH1       0x000000D3
+#else
+#endif
 
 //
 //! GPIO pin A14
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA14_PA14          0x000000E1
 #define GPIO_PA14_SPI0CS        0x000000E2
 #define GPIO_PA14_UART0TX       0x000000E3
+#else
+#endif
 
 //
 //! GPIO pin A15
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA15_PA15          0x000000F1
 #define GPIO_PA15_SPI0CLK       0x000000F2
 #define GPIO_PA15_UART0RX       0x000000F3
+#else
+#endif
 
 //
 //! GPIO pin A16
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA16_PA16          0x00000101
 #define GPIO_PA16_SPI0MOSI      0x00000102
 #define GPIO_PA16_SPI0MISO      0x00000105
+#else
+#endif
 
 //
 //! GPIO pin A17
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA17_PA17          0x00000111
 #define GPIO_PA17_SPI0MISO      0x00000112
 #define GPIO_PA17_SPI0MOSI      0x00000115
+#else
+#endif
 
 //
 //! GPIO pin A18
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PA18_EXTAL0        0x00000120
 #define GPIO_PA18_PA18          0x00000121
 #define GPIO_PA18_UART1RX       0x00000123
 #define GPIO_PA18_TIM0CLKIN     0x00000124
+#else
+#endif
 
 //
 //! GPIO pin A19
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PA19_PA19          0x00000131
+#define GPIO_PA19_SPI0CS    	0x00000133
+#else
 #define GPIO_PA19_XTAL0         0x00000130
 #define GPIO_PA19_PA19          0x00000131
 #define GPIO_PA19_UART1TX       0x00000133
 #define GPIO_PA19_TIM1CLKIN     0x00000134
 #define GPIO_PA19_LPTMR0ALT1    0x00000136
+#endif
 
 //
 //! GPIO pin A20
 //
+#ifndef MKL05Z32VLF4
 #define GPIO_PA20_PA20          0x00000141
 #define GPIO_PA20_RESETB        0x00000147
+#endif
 
 //
 //! GPIO pin B0
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB0_ADC8           0x00001000
 #define GPIO_PB0_TSI0CH0        0x00001000
 #define GPIO_PB0_PB0            0x00001001
 #define GPIO_PB0_LLWUP5         0x00001001
 #define GPIO_PB0_I2C0SCK        0x00001002
 #define GPIO_PB0_TIM1CH0        0x00001003
+#else
+#endif
 
 //
 //! GPIO pin B1
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB1_ADC9           0x00001010
 #define GPIO_PB1_TSI0CH6        0x00001010
 #define GPIO_PB1_PB1            0x00001011
 #define GPIO_PB1_I2C0SDA        0x00001012
 #define GPIO_PB1_TIM1CH1        0x00001013
+#else
+#endif
 
 //
 //! GPIO pin B2
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB2_ADC12          0x00001020
 #define GPIO_PB2_TSI0CH7        0x00001020
 #define GPIO_PB2_PB2            0x00001021
 #define GPIO_PB2_I2C0SCK        0x00001022
 #define GPIO_PB2_TIM2CH0        0x00001023
+#else
+#endif
 
 //
 //! GPIO pin B3
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB3_ADC13          0x00001030
 #define GPIO_PB3_TSI0CH8        0x00001030
 #define GPIO_PB3_PB3            0x00001031
 #define GPIO_PB3_I2C0SDA        0x00001032
 #define GPIO_PB3_TIM2CH1        0x00001033
+#else
+#endif
+
+//
+//! GPIO pin B4
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB4_ADC13          0x00001040
+#define GPIO_PB4_TSI0CH8        0x00001040
+#define GPIO_PB4_PB4            0x00001041
+#define GPIO_PB4_I2C0SDA        0x00001042
+#define GPIO_PB4_TIM2CH1        0x00001043
+#endif
+
+//
+//! GPIO pin B5
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB5_ADC13          0x00001050
+#define GPIO_PB5_TSI0CH8        0x00001050
+#define GPIO_PB5_PB5            0x00001051
+#define GPIO_PB5_I2C0SDA        0x00001052
+#define GPIO_PB5_TIM2CH1        0x00001053
+#endif
+
+//
+//! GPIO pin B6
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB6_ADC13          0x00001060
+#define GPIO_PB6_TSI0CH8        0x00001060
+#define GPIO_PB6_PB6            0x00001061
+#define GPIO_PB6_I2C0SDA        0x00001062
+#define GPIO_PB6_TIM2CH1        0x00001063
+#endif
+
+//
+//! GPIO pin B7
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB7_ADC13          0x00001070
+#define GPIO_PB7_TSI0CH8        0x00001070
+#define GPIO_PB7_PB7            0x00001071
+#define GPIO_PB7_I2C0SDA        0x00001072
+#define GPIO_PB7_TIM2CH1        0x00001073
+#endif
+
+
 
 //
 //! GPIO pin B8
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB8_PB8            0x00001081
 #define GPIO_PB8_EXTRGIN        0x00001083
+#else
+#endif
 
 //
 //! GPIO pin B9
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB9_PB9            0x00001091
+#else
+#endif
 
 //
 //! GPIO pin B10
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB10_PB10          0x000010A1
 #define GPIO_PB10_SPI1CS        0x000010A2
+#else
+#endif
 
 //
 //! GPIO pin B11
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PB11_ADC8          0x000010B0
+#define GPIO_PB11_PB11          0x000010B1
+#define GPIO_PB11_TIM0CH0       0x000010B2
+#else
 #define GPIO_PB11_PB11          0x000010B1
 #define GPIO_PB11_SPI1CLK       0x000010B2
+#endif
+
+//
+//! GPIO pin B12
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB12_PB12          0x000010C1
+#define GPIO_PB12_SPI1CLK       0x000010C2
+#endif
+
+//
+//! GPIO pin B13
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB13_PB13          0x000010D1
+#define GPIO_PB13_SPI1CLK       0x000010D2
+#endif
+
+//
+//! GPIO pin B14
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB14_PB14          0x000010E1
+#define GPIO_PB14_SPI1CLK       0x000010E2
+#endif
+
+//
+//! GPIO pin B15
+//
+#ifdef MKL05Z32VLF4
+#define GPIO_PB15_PB15          0x000010F1
+#define GPIO_PB15_SPI0MOSI      0x000010F2
+#define GPIO_PB15_SPI0MISO      0x000010F3
+#endif
 
 //
 //! GPIO pin B16
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PB16_PB16          0x00001101
+#define GPIO_PB16_SPI0MISO      0x00001102
+#define GPIO_PB16_SPI0MOSI      0x00001103
+#else
 #define GPIO_PB16_TSI0CH9       0x00001100
 #define GPIO_PB16_PB16          0x00001101
 #define GPIO_PB16_SPI1MOSI      0x00001102
 #define GPIO_PB16_UART0RX       0x00001103
 #define GPIO_PB16_TIM0CLKIN     0x00001104
 #define GPIO_PB16_SPI1MISO      0x00001105
+#endif
 
 //
 //! GPIO pin B17
 //
+#ifdef MKL05Z32VLF4
+#define GPIO_PB17_PB17          0x00001111
+#define GPIO_PB17_TIM1CLKIN     0x00001112
+#define GPIO_PB17_SPI0CLK       0x00001113
+#else
 #define GPIO_PB17_TSI0CH10      0x00001110
 #define GPIO_PB17_PB17          0x00001111
 #define GPIO_PB17_SPI1MISO      0x00001112
 #define GPIO_PB17_UART0TX       0x00001113
 #define GPIO_PB17_TIM1CLKIN     0x00001114
 #define GPIO_PB17_SPI1MOSI      0x00001115
+#endif
 
 //
 //! GPIO pin B18
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB18_TSI0CH11      0x00001120
 #define GPIO_PB18_PB18          0x00001121
 #define GPIO_PB18_TIM2CH0       0x00001123
+#else
+#endif
 
 //
 //! GPIO pin B19
 //
+#ifdef MKL05Z32VLF4
 #define GPIO_PB19_TSI0CH12      0x00001130
 #define GPIO_PB19_PB19          0x00001131
 #define GPIO_PB19_TIM2CH1       0x00001133
+#else
+#endif
 
 //
 //! GPIO pin C0
 //
+#ifndef MKL05Z32VLF4
 #define GPIO_PC0_ADC14          0x00002000
 #define GPIO_PC0_TSI0CH13       0x00002000
 #define GPIO_PC0_PC0            0x00002001
@@ -3279,6 +3517,7 @@ extern unsigned long xGPIODirModeGet(unsigned long ulPort,
 //
 //! GPIO pin C13
 //
+
 #define GPIO_PC13_PC13           0x000020D1
 #define GPIO_PC13_TIM1CLKIN      0x000020D4
 
@@ -3477,6 +3716,7 @@ extern unsigned long xGPIODirModeGet(unsigned long ulPort,
 //
 #define GPIO_PE31_PE31          0x000041F1
 #define GPIO_PE31_TIM0CH4       0x000041F3
+#endif
 
 //*****************************************************************************
 //
