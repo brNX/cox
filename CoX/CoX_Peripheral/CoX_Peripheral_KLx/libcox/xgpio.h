@@ -3303,9 +3303,13 @@ extern unsigned long xGPIODirModeGet(unsigned long ulPort,
 //! GPIO pin B10
 //
 #ifdef MKL05Z32VLF4
+#define GPIO_PB10_ADC9          0x000010A0
+#define GPIO_PB10_TSI0CH7       0x000010A0
+#define GPIO_PB10_PB10          0x000010A1
+#define GPIO_PB10_TIM0CH1       0x000010A2
+#else
 #define GPIO_PB10_PB10          0x000010A1
 #define GPIO_PB10_SPI1CS        0x000010A2
-#else
 #endif
 
 //
