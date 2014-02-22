@@ -2508,16 +2508,15 @@ unsigned long SysCtlPWMClkGet(void)
     //
     // Check the PWM Clock Source.
     //
-    if((xHWREG(SIM_SOPT2) & SIM_SOPT2_TPMSRC_MCGXLL)
-                         == SIM_SOPT2_TPMSRC_MCGXLL)
+    if((xHWREG(SIM_SOPT2) & SIM_SOPT2_TPMSRC_MCGXLL)== SIM_SOPT2_TPMSRC_MCGXLL)
     {
         ulHclk = SysCtlHClockGet();
 
-        /*divider
-        unsigned long divider =  xHWREG(TPM0_BASE+TPM_SC) & TPM_SC_PS_M;
-        divider = 1<<divider;
-        */
+#ifdef MKL05Z32VLF4
         ulPWMClk = ulHclk;
+#else
+        ulPWMClk = ulHclk/2;
+#endif
         return ulPWMClk;
     }
     else if((xHWREG(SIM_SOPT2) & SIM_SOPT2_TPMSRC_OSCERCLK)
@@ -2555,13 +2554,15 @@ unsigned long SysCtlUART0ClkGet(void)
     //
     // Check the PWM Clock Source.
     //
-    if((xHWREG(SIM_SOPT2) & SIM_SOPT2_UART0SRC_MCGXLL)
-                         == SIM_SOPT2_UART0SRC_MCGXLL)
+    if((xHWREG(SIM_SOPT2) & SIM_SOPT2_UART0SRC_MCGXLL)== SIM_SOPT2_UART0SRC_MCGXLL)
     {
         ulHclk = SysCtlHClockGet();
 
-        //TODO: check divider?
+#ifdef MKL05Z32VLF4
         ulUARTClk = ulHclk;
+#else
+        ulUARTClk = ulHclk/2;
+#endif
         return ulUARTClk;
     }
     else if((xHWREG(SIM_SOPT2) & SIM_SOPT2_UART0SRC_OSCERCLK)
