@@ -3204,11 +3204,13 @@ extern unsigned long xGPIODirModeGet(unsigned long ulPort,
 //! GPIO pin B1
 //
 #ifdef MKL05Z32VLF4
-#define GPIO_PB1_ADC9           0x00001010
-#define GPIO_PB1_TSI0CH6        0x00001010
+#define GPIO_PB1_ADC5           0x00001010
+#define GPIO_PB1_TSI0CH3        0x00001010
+#define GPIO_PB1_CMP0IN3		0x00001010
+//TODO: dac0 out
 #define GPIO_PB1_PB1            0x00001011
-#define GPIO_PB1_I2C0SDA        0x00001012
-#define GPIO_PB1_TIM1CH1        0x00001013
+#define GPIO_PB1_UART0TX        0x00001012
+#define GPIO_PB1_UART0RX        0x00001013
 #else
 #define GPIO_PB1_ADC9           0x00001010
 #define GPIO_PB1_TSI0CH6        0x00001010
@@ -3221,11 +3223,12 @@ extern unsigned long xGPIODirModeGet(unsigned long ulPort,
 //! GPIO pin B2
 //
 #ifdef MKL05Z32VLF4
-#define GPIO_PB2_ADC12          0x00001020
-#define GPIO_PB2_TSI0CH7        0x00001020
+#define GPIO_PB2_ADC4          	0x00001020
+#define GPIO_PB2_TSI0CH2        0x00001020
 #define GPIO_PB2_PB2            0x00001021
-#define GPIO_PB2_I2C0SCK        0x00001022
-#define GPIO_PB2_TIM2CH0        0x00001023
+#define GPIO_PB2_LLWUP5			0x00001021
+#define GPIO_PB2_UART0RX        0x00001022
+#define GPIO_PB2_UART0TX        0x00001023
 #else
 #define GPIO_PB2_ADC12          0x00001020
 #define GPIO_PB2_TSI0CH7        0x00001020
